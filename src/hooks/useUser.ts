@@ -1,36 +1,47 @@
 import { useEffect, useState } from "react";
-import { getUsers } from "../services/usersService";
+import { getUserById } from "../services/usersService";
 import type { User } from "../types/User";
 
-export function useUsers() {
-  const [users, setUsers] = useState<User[]>([]);
+export function useUser(userId: string | undefined) {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Flag to prevent state updates if the component unmounts
     let isMounted = true;
 
-    const fetchUsers = async () => {
+    const fetchUser = async () => {
+      if (!userId) {
+        setError("User ID not provided");
+        setLoading(false);
+        return;
+      }
+
+      const id = Number(userId);
+
+      if (Number.isNaN(id)) {
+        setError("Invalid user ID");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const data = await getUsers();
-        // Only update state if the component is still mounted
-        if (isMounted) setUsers(data);
+        const data = await getUserById(id);
+        if (isMounted) setUser(data);
       } catch (err) {
-        if (isMounted) setError("Failed to load users. ERR:" + err);
+        if (isMounted) setError("Failed to load user details. ERR: " + err);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
 
-    fetchUsers();
+    fetchUser();
 
-    // Cleanup function: runs when the component unmounts
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [userId]);
 
-  return { users, loading, error };
+  return { user, loading, error };
 }
