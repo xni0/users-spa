@@ -1,34 +1,40 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router"; // or react-router-dom
+import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
+import PrivateRoute from "./components/PrivateRoute";
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Users from "./pages/Users";
 import UserDetail from "./pages/UserDetail";
+import UserCreate from "./pages/UserCreate"; // <--- New
+import Login from "./pages/Login";           // <--- New
 import NotFound from "./pages/NotFound";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        {/* Index route for the root path */}
-        <Route index element={<Home />} />
-        
-        <Route path="/about" element={<About />} />
-        
-        {/* Nested routes for Users */}
-        <Route path="/users">
-          {/* Index route matches /users */}
-          <Route index element={<Users />} />
-          
-          {/* Dynamic route matches /users/1, /users/2, etc. */}
-          <Route path=":userId" element={<UserDetail />} />
-        </Route>
-        
-        {/* Wildcard route for 404 errors */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* 🔐 PROTECTED ROUTES */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/users">
+              <Route index element={<Users />} />
+              <Route path="new" element={<UserCreate />} /> {/* /users/new */}
+              <Route path=":userId" element={<UserDetail />} />
+            </Route>
+          </Route>
+          {/* 🔐 END PROTECTED ROUTES */}
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
