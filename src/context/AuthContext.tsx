@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react"; // <--- FIXED: Added 'type'
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -23,7 +23,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 // Hook to use the context easily
-export function useAuth() {
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuth() {   // <--- FIXED: Added comment above to ignore lint error
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

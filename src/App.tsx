@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router"; // or react-router-dom
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./components/PrivateRoute.tsx";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
